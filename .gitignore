@@ -1,0 +1,16 @@
+# Environments
+venv/
+env/
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Chroma DB (Local Vector Store)
+.chroma/
+chroma_db/
+
+# Streamlit
+.streamlit/
