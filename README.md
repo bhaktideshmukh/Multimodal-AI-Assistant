@@ -1,6 +1,9 @@
 # 🩺 Multimodal AI Medical Lab Analyzer
 
-An AI-powered Medical Lab Report Analyzer that uses Multimodal Vision models (Google Gemini) and a local RAG (Retrieval-Augmented Generation) pipeline to extract complex blood test data and provide personalized, grounded dietary advice based on medical reference guidelines.
+## 📖 About
+An AI-powered Medical Lab Report Analyzer that acts as a bridge between complex medical data and actionable lifestyle advice. Many individuals struggle to interpret their blood test reports due to dense medical jargon and confusing table layouts. 
+
+This project solves that by using **Multimodal Vision AI** to "read" the physical structure of a scanned PDF or image, extracting the critical biomarkers with perfect accuracy. It then uses a **Retrieval-Augmented Generation (RAG) pipeline** to cross-reference those specific biomarkers against a local database of standard medical guidelines, generating personalized, plain-English dietary and lifestyle recommendations.
 
 ## 🌟 Features
 - **Multimodal Ingestion**: Upload images (`.png`, `.jpg`) or `.pdf` lab reports.
