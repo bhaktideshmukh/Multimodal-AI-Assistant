@@ -55,9 +55,6 @@ def extract_medical_data(file_path: str):
     # 3. Force the LLM to return our exact JSON structure
     structured_llm = llm.with_structured_output(BloodTestReport)
     
-    # We will process the first page for now as a proof of concept
-    img = images[0]
-    
     prompt = """
     You are an expert medical data extractor. 
     Analyze this blood test report image and extract all the biomarker readings.
@@ -65,19 +62,28 @@ def extract_medical_data(file_path: str):
     Ignore patient personal details like name and address.
     """
     
-    # 4. Convert Image to base64 and construct the multimodal message
-    base64_img = image_to_base64(img)
-    message = HumanMessage(
-        content=[
-            {"type": "text", "text": prompt},
-            {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_img}"}}
-        ]
-    )
+    all_results = []
     
+    # Process every page in the document
     print("Sending to Gemini Vision...")
-    response = structured_llm.invoke([message])
-    
-    return response
+    for i, img in enumerate(images):
+        print(f"Processing page {i+1} of {len(images)}...")
+        
+        # 4. Convert Image to base64 and construct the multimodal message
+        base64_img = image_to_base64(img)
+        message = HumanMessage(
+            content=[
+                {"type": "text", "text": prompt},
+                {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_img}"}}
+            ]
+        )
+        
+        response = structured_llm.invoke([message])
+        if response and response.results:
+            all_results.extend(response.results)
+            
+    # Combine all extracted biomarkers into a single report
+    return BloodTestReport(results=all_results)
 
 if __name__ == "__main__":
     # To test this, you will need to put a sample blood test image 
