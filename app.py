@@ -1,9 +1,12 @@
 import streamlit as st
 import os
 
-# Bridge Streamlit Cloud Secrets to os.environ if running on cloud
-if "GOOGLE_API_KEY" not in os.environ and hasattr(st, "secrets") and "GOOGLE_API_KEY" in st.secrets:
-    os.environ["GOOGLE_API_KEY"] = st.secrets["GOOGLE_API_KEY"]
+# Safely bridge Streamlit Cloud Secrets to os.environ
+try:
+    if "GOOGLE_API_KEY" in st.secrets:
+        os.environ["GOOGLE_API_KEY"] = st.secrets["GOOGLE_API_KEY"]
+except Exception:
+    pass
 
 from vision import extract_medical_data
 from rag_chain import generate_advice
@@ -13,6 +16,9 @@ st.set_page_config(page_title="AI Medical Lab Analyzer", page_icon="🩺", layou
 
 st.title("🩺 Multimodal AI Lab Report Analyzer")
 st.markdown("Upload your blood test report (Image or PDF) and our AI will extract the data and provide personalized dietary advice based on standard medical guidelines.")
+
+if not os.environ.get("GOOGLE_API_KEY"):
+    st.warning("⚠️ **GOOGLE_API_KEY is not configured.** If you deployed to Streamlit Cloud, please add it in **App Settings > Secrets**.")
 
 # File Uploader
 uploaded_file = st.file_uploader("Upload Lab Report", type=["jpg", "jpeg", "png", "pdf"])
