@@ -5,9 +5,12 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from vision import extract_medical_data
 
-def generate_advice(image_path: str):
-    # 1. Extract the data using our vision script
-    extraction = extract_medical_data(image_path)
+def generate_advice(image_path: str = None, extraction = None):
+    # 1. Extract the data using our vision script if not already provided
+    if extraction is None:
+        if not image_path:
+            raise ValueError("Either image_path or extraction must be provided.")
+        extraction = extract_medical_data(image_path)
     
     # 2. Filter out normal results to focus only on Abnormalities (High/Low)
     abnormal_results = [

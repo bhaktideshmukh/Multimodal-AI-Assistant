@@ -27,15 +27,16 @@ def process_file(file_path: str) -> List[Image.Image]:
     images = []
     if file_path.lower().endswith('.pdf'):
         print("PDF detected. Converting pages to images...")
-        doc = fitz.open(file_path)
-        for page_num in range(len(doc)):
-            page = doc.load_page(page_num)
-            pix = page.get_pixmap()
-            img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
-            images.append(img)
+        with fitz.open(file_path) as doc:
+            for page_num in range(len(doc)):
+                page = doc.load_page(page_num)
+                pix = page.get_pixmap()
+                img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+                images.append(img)
     else:
         print("Image detected.")
-        images.append(Image.open(file_path))
+        with Image.open(file_path) as img:
+            images.append(img.copy())
     return images
 
 def image_to_base64(img: Image.Image) -> str:

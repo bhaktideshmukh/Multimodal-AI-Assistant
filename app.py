@@ -18,7 +18,11 @@ if uploaded_file is not None:
     with open(temp_path, "wb") as f:
         f.write(uploaded_file.getbuffer())
     
-    st.image(temp_path, caption="Uploaded Report", use_container_width=True)
+    is_pdf = uploaded_file.name.lower().endswith('.pdf')
+    if is_pdf:
+        st.info(f"📄 PDF Document Uploaded: **{uploaded_file.name}**")
+    else:
+        st.image(temp_path, caption="Uploaded Report", use_container_width=True)
     
     if st.button("Analyze Report"):
         with st.spinner("Extracting Biomarkers using Vision AI..."):
@@ -35,7 +39,10 @@ if uploaded_file is not None:
                 
                 # Run Phase 4: RAG Reasoning
                 with st.spinner("Consulting Medical Database..."):
-                    advice = generate_advice(temp_path)
+                    try:
+                        advice = generate_advice(image_path=temp_path, extraction=extraction)
+                    except TypeError:
+                        advice = generate_advice(temp_path)
                     
                     st.subheader("💡 Personalized AI Advice")
                     st.info(advice)
@@ -43,9 +50,12 @@ if uploaded_file is not None:
             except Exception as e:
                 st.error(f"An error occurred during analysis: {str(e)}")
             finally:
-                # Clean up the temporary file
+                # Clean up the temporary file safely
                 if os.path.exists(temp_path):
-                    os.remove(temp_path)
+                    try:
+                        os.remove(temp_path)
+                    except Exception:
+                        pass
 
 st.markdown("---")
 st.caption("⚠️ **Medical Disclaimer:** This is an experimental AI application. The dietary suggestions are based on general guidelines and should not replace professional medical advice. Always consult a physician.")

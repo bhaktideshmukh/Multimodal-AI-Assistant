@@ -1,12 +1,12 @@
-from langchain_community.document_loaders import TextLoader
+from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_community.vectorstores import Chroma
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_chroma import Chroma
 
 def ingest_data():
     print("1. Loading Medical Reference Guide...")
-    loader = TextLoader("medical_reference_guide.md")
-    documents = loader.load()
+    with open("medical_reference_guide.md", "r", encoding="utf-8") as f:
+        documents = [Document(page_content=f.read(), metadata={"source": "medical_reference_guide.md"})]
 
     print("2. Splitting text into chunks...")
     # We cut the document into 500-character chunks so the LLM gets very specific context.
