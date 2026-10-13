@@ -1,5 +1,10 @@
 import streamlit as st
 import os
+
+# Bridge Streamlit Cloud Secrets to os.environ if running on cloud
+if "GOOGLE_API_KEY" not in os.environ and hasattr(st, "secrets") and "GOOGLE_API_KEY" in st.secrets:
+    os.environ["GOOGLE_API_KEY"] = st.secrets["GOOGLE_API_KEY"]
+
 from vision import extract_medical_data
 from rag_chain import generate_advice
 

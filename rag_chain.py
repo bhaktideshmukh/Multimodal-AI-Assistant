@@ -1,3 +1,4 @@
+import os
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -27,6 +28,11 @@ def generate_advice(image_path: str = None, extraction = None):
     
     # 3. Connect to our existing Chroma Database
     print("\n[!] Searching Medical Database for advice...")
+    if not os.path.exists("./chroma_db"):
+        print("[!] chroma_db not found. Auto-ingesting reference data...")
+        from ingest import ingest_data
+        ingest_data()
+        
     embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
     vector_store = Chroma(persist_directory="./chroma_db", embedding_function=embeddings)
     
